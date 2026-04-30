@@ -254,9 +254,16 @@ async def dynamo_langchain(llm_config: DynamoModelConfig, _builder: Builder):
     """
     from langchain_openai import ChatOpenAI
 
-    # Build config dict excluding Dynamo-specific and NAT-specific fields
+    # Build config dict excluding Dynamo-specific and NAT-specific fields.
+    # verify_ssl is applied via _create_httpx_client_with_dynamo_hooks, not ChatOpenAI / the API.
     config_dict = llm_config.model_dump(
-        exclude={"type", "thinking", "api_type", *DynamoModelConfig.get_dynamo_field_names()},
+        exclude={
+            "type",
+            "thinking",
+            "api_type",
+            "verify_ssl",
+            *DynamoModelConfig.get_dynamo_field_names(),
+        },
         by_alias=True,
         exclude_none=True,
         exclude_unset=True,
